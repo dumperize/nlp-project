@@ -1,0 +1,85 @@
+rule all:
+    input:
+        "data/interim/scrapper/TED_Talks.xlsx",
+        "data/processed/full_dataset.xlsx",
+        "data/processed/train_dataset.xlsx",
+        "data/processed/test_dataset.xlsx",
+        "data/processed/val_dataset.xlsx",
+        "data/interim/result/text_rank.json",
+        "data/interim/result/summa_lib.json",
+        "data/interim/result/lead3.json",
+        "data/interim/eda/lemmas.json"
+
+# models
+# rule model_summaraner_bpe:
+#     input:
+#         "data/processed/full_dataset.xlsx"
+#     output:
+#         "data/interim/result/helper/bpe.bin"
+#     shell:
+#         "python3 src/models/summaranner/bpe.py {input} {output}"
+
+rule model_text_rank:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/interim/result/text_rank.json"
+    shell:
+        "python3 src/models/text_rank/model.py {input} {output}"
+
+rule model_summa_lib:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/interim/result/summa_lib.json"
+    shell:
+        "python3 src/models/summa_lib/model.py {input} {output}"
+
+rule model_lead3:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/interim/result/lead3.json"
+    shell:
+        "python3 src/models/lead3/model.py {input} {output}"
+
+# dataset
+rule split_dataset:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/processed/train_dataset.xlsx",
+        "data/processed/test_dataset.xlsx",
+        "data/processed/val_dataset.xlsx"
+    shell:
+        "python3 src/data/split_dataset/split_dataset.py {input} {output}"
+
+rule eda:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/interim/eda/lemmas.json"
+    shell:
+        "python3 src/data/EDA/eda.py {input} {output}"
+
+rule prepare_dataset:
+    input:
+        "data/interim/scrapper/TED_Talks.xlsx"
+    output:
+        "data/processed/full_dataset.xlsx"
+    shell:
+        "python3 src/data/preprocess/prepare.py {input} {output}"
+
+rule scrapper_entities:
+    input:
+        "data/interim/scrapper/list_urls.txt"
+    output:
+        "data/interim/scrapper/TED_Talks.xlsx"
+    shell:
+        "python3 src/data/scrapper/download_entities.py {input} {output}"
+
+rule scrapper_list_urls:
+    output:
+        "data/interim/scrapper/list_urls.txt"
+    shell:
+        "python3 src/data/scrapper/download_list.py {output}"

@@ -1,5 +1,0 @@
-text vocabulary size: 85393
-text lemma vocabulary size: 85393
-summary vocabulary size: 25186
-summary lemma vocabulary size: 25186
-common lemmas summary vs text: 21276
