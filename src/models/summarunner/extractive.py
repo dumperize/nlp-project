@@ -27,12 +27,6 @@ def build_summary_greedy(text, original_summary, calc_score):
             try:
                 current_score = calc_score(current_summary, original_summary)
             except:
-                print(current_summary)
-                print(i)
-                print(text)
-                print(sentences)
-                print(current_summary_sentences_sort)
-            else:
                 current_score = -1.0
             summaries.append([current_score, current_summary_sentences])
 

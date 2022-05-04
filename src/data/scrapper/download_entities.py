@@ -5,14 +5,10 @@ from multiprocessing import Process, Manager
 from src.data.scrapper.download_entity import download_entity
 
 
-INPUT_FILE_PATH = "data/interim/scrapper/list_urls.txt"
-OUTPUT_FILE_PATH = "data/interim/scrapper/TED_Talks.xlsx"
-
-
 @click.command()
-@click.argument("list_urls_file_path", default=INPUT_FILE_PATH, type=click.Path(exists=True))
-@click.argument("output_file_path", default=OUTPUT_FILE_PATH)
-def download_entities(list_urls_file_path=INPUT_FILE_PATH, output_file_path=OUTPUT_FILE_PATH):
+@click.argument("list_urls_file_path", type=click.Path(exists=True))
+@click.argument("output_file_path")
+def download_entities(list_urls_file_path: str, output_file_path: str):
     file = open(list_urls_file_path, 'r')
     urls = file.readlines()
 

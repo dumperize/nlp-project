@@ -2,13 +2,10 @@ import click
 import pandas as pd
 
 
-INPUT_FILE = 'data/interim/scrapper/TED_Talk.xlsx'
-OUTPUT_FILE = 'data/processed/full_dataset.xlsx'
-
 @click.command()
-@click.argument("input_file_path", default=INPUT_FILE, type=click.Path(exists=True))
-@click.argument("output_file_path", default=OUTPUT_FILE)
-def clean_data(input_file_path = INPUT_FILE, output_file_path=OUTPUT_FILE):
+@click.argument("input_file_path", type=click.Path(exists=True))
+@click.argument("output_file_path")
+def clean_data(input_file_path: str, output_file_path: str):
     stop_list = [43148,  9985,   196,  1156, 42819,  1323,  2028, 42461, 42548,
         23943, 37985, 26265,  2273, 42546,  1677,  2147, 39095, 15814,
             2611,   117,  1464,   115, 82299,   729,   109,   179, 70428,

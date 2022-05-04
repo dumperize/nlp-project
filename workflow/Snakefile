@@ -1,5 +1,9 @@
 rule all:
     input:
+        "data/interim/helper/bpe.bin",
+        "data/interim/helper/train_dataset_with_info.xlsx",
+        "data/interim/helper/val_dataset_with_info.xlsx",
+        "data/interim/helper/test_dataset_with_info.xlsx",
         "data/interim/scrapper/TED_Talks.xlsx",
         "data/processed/full_dataset.xlsx",
         "data/processed/train_dataset.xlsx",
@@ -11,13 +15,21 @@ rule all:
         "data/interim/eda/lemmas.json"
 
 # models
-# rule model_summaraner_bpe:
-#     input:
-#         "data/processed/full_dataset.xlsx"
-#     output:
-#         "data/interim/result/helper/bpe.bin"
-#     shell:
-#         "python3 src/models/summaranner/bpe.py {input} {output}"
+rule model_summaraner_add_info:
+    input:
+        "data/processed/{type}_dataset.xlsx"
+    output:
+        "data/interim/helper/{type}_dataset_with_info.xlsx"
+    shell:
+        "python3 src/models/summarunner/add_info_in_records.py {input} {output}"
+
+rule model_summaraner_bpe:
+    input:
+        "data/processed/full_dataset.xlsx"
+    output:
+        "data/interim/helper/bpe.bin"
+    shell:
+        "python3 src/models/summarunner/bpe.py {input} {output}"
 
 rule model_text_rank:
     input:

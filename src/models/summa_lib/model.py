@@ -1,6 +1,7 @@
 import click
 import pandas as pd
-import json, os
+import json
+import os
 
 from summa.summarizer import summarize
 from src.models.calc_scores import calc_scores
@@ -8,13 +9,11 @@ from src.models.calc_scores import calc_scores
 
 PART = 0.1
 
-INPUT = 'data/processed/full_dataset.xlsx'
-OUTPUT = 'data/interim/results/summa_lib/result.json'
 
 @click.command()
-@click.argument("input_file_path", default=INPUT, type=click.Path(exists=True))
-@click.argument("output_file_path", default=OUTPUT)
-def calc_summa_score(input_file_path=INPUT, output_file_path=OUTPUT):
+@click.argument("input_file_path", type=click.Path(exists=True))
+@click.argument("output_file_path")
+def calc_summa_score(input_file_path: str, output_file_path: str):
     records = pd.read_excel(input_file_path)
 
     originals = []
@@ -27,7 +26,7 @@ def calc_summa_score(input_file_path=INPUT, output_file_path=OUTPUT):
         predictions.append(predicted_summary)
 
     scores = calc_scores(originals, predictions)
-    json_obj = json.dumps(scores, indent = 4)
+    json_obj = json.dumps(scores, indent=4)
 
     os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
     with open(output_file_path, "w") as outfile:
