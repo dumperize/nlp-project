@@ -1,11 +1,11 @@
 from collections import Counter, namedtuple
 import nltk
-import pymorphy2
+from nltk.stem import WordNetLemmatizer
 import pandas as pd
 import click
 import json
 import os
-
+nltk.download('wordnet')
 
 Stats = namedtuple(
     "Stats", "vocabulary,lemma_vocabulary,words_count,unique_words_counts")
@@ -14,17 +14,18 @@ Stats = namedtuple(
 @click.command()
 @click.argument("input_file_path", type=click.Path(exists=True))
 @click.argument("output_file_path")
-def collect_stats(input_file_path, output_file_path, text_max_word=3000, summary_max_word=100):
+def collect_stats(input_file_path, output_file_path, text_max_word=300000, summary_max_word=100):
     records = pd.read_excel(input_file_path)
 
-    morph = pymorphy2.MorphAnalyzer()
+    lemmatizer = WordNetLemmatizer()
 
     text_stats = Stats(Counter(), Counter(), list(), list())
     summary_stats = Stats(Counter(), Counter(), list(), list())
 
     def upgrade_record_field_stats(field, stats, max_words):
         words = nltk.word_tokenize(field)[:max_words]
-        lemmas = [morph.parse(word)[0].normal_form for word in words]
+        lemmas = [lemmatizer.lemmatize(word) for word in words]
+        
         stats.vocabulary.update(words)
         stats.lemma_vocabulary.update(lemmas)
         stats.words_count.append(len(words))

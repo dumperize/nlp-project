@@ -1,7 +1,7 @@
 {
-    "text_stats_vocabulary": 75027,
-    "text_stats_lemma_vocabulary": 75027,
+    "text_stats_vocabulary": 76206,
+    "text_stats_lemma_vocabulary": 68124,
     "summary_stats": 22953,
-    "summary_lemma_vocabulary": 22953,
-    "common_stats": 19338
+    "summary_lemma_vocabulary": 20754,
+    "common_stats": 17297
 }
