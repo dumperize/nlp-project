@@ -16,7 +16,7 @@ class BatchIterator():
             bpe_processor,
             shuffle=True,
             max_sentences=30,
-            max_sentence_length=50,
+            max_sentence_length=100,
             device=torch.device('cuda')):
         self.records = records
         self.n_samples = records.shape[0]
@@ -39,7 +39,7 @@ class BatchIterator():
             np.random.shuffle(indices)
 
         for start in range(0, self.n_samples, self.batch_size):
-            end = min(start+self.batch_size, self.n_samples)
+            end = min(start + self.batch_size, self.n_samples)
             batch_indices = indices[start:end]
 
             batch_inputs = []
@@ -53,18 +53,21 @@ class BatchIterator():
                 batch_records.append(record)
                 text, summary = record['text'], record['summary']
 
-                # if 'sentences' not in record:
-                #     sentences = nltk.sent_tokenize(text)
-                # else:
-                sentences = record['sentences']
+                if 'sentences' not in record or record['sentences'] is None:
+                    sentences = nltk.sent_tokenize(text)[:self.max_sentence_length]
+                else:
+                    sentences = record['sentences'][:self.max_sentence_length]
                 max_sentences = max(len(sentences), max_sentences)
 
-                # if 'summary_greedy' not in record:
-                #     sentences_indeces = build_summary_greedy(
-                #     text, summary, calc_score=lambda x,y: self.rouge.get_scores([x], [y], avg=True)['rouge-2']['f'])
-                # else:
-                sentences_indeces = record['greedy_summary_sentences']
-                
+                if 'greedy_summary_sentences' not in record or record['greedy_summary_sentences'] is None:
+                    sentences_indeces = build_summary_greedy(
+                        text,
+                        summary,
+                        calc_score=lambda x, y: self.rouge.get_scores([x], [y], avg=True)['rouge-2']['f'], 
+                        max_sentences=self.max_sentence_length)[1]
+                else:
+                    sentences_indeces = record['greedy_summary_sentences'][:self.max_sentence_length]
+
                 inputs = [self.bpe_processor.encode(
                     sentence)[:self.max_sentence_length]for sentence in sentences]
                 max_sentence_length = max(max_sentence_length, max(

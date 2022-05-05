@@ -2,11 +2,11 @@ import copy
 import nltk
 
 
-def build_summary_greedy(text, original_summary, calc_score):
+def build_summary_greedy(text, original_summary, calc_score, max_sentences=30):
     original_summary = original_summary.lower()
 
     text = text.lower()
-    sentences = nltk.tokenize.sent_tokenize(text)
+    sentences = nltk.tokenize.sent_tokenize(text)[:max_sentences]
     n_sentences = len(sentences)
     
     summary_sentences = set()

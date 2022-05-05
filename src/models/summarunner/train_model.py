@@ -36,6 +36,7 @@ def train_model(model, train_iterator, val_iterator, vocabulary, bpe_processor,
 
                 model.eval()
                 for _, val_batch in enumerate(val_iterator):
+                    # print(val_batch["inputs"].shape, batch['outputs'].shape)
                     logits = model(val_batch["inputs"])
                     val_total_loss += loss_function(logits, batch['outputs'])
                     val_batch_count += 1
@@ -47,3 +48,4 @@ def train_model(model, train_iterator, val_iterator, vocabulary, bpe_processor,
                 start_time = time.time()
         total_loss = 0
         start_time = time.time()
+    torch.save(model.state_dict(), 'data/model_scripted_100.pt')

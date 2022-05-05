@@ -22,10 +22,16 @@ def calc_summarunner_scores(
     train_records = pd.read_excel(train_file_path)
     val_records = pd.read_excel(val_file_path)
 
-    train_records['sentences'].apply(lambda x: json.loads(x))
-    val_records['sentences'].apply(lambda x: json.loads(x))
-    train_records['greedy_summary_sentences'].apply(lambda x: json.loads(x))
-    val_records['greedy_summary_sentences'].apply(lambda x: json.loads(x))
+    def json_convert(x):
+        try:
+            data = json.loads(x)
+        except:
+            data = None
+        return data
+    train_records['sentences'] = train_records['sentences'].apply(json_convert)
+    val_records['sentences'] = val_records['sentences'].apply(json_convert)
+    train_records['greedy_summary_sentences'] = train_records['greedy_summary_sentences'].apply(lambda x: json.loads(x))
+    val_records['greedy_summary_sentences'] = val_records['greedy_summary_sentences'].apply(lambda x: json.loads(x))
 
     bpe_processor = yttm.BPE(bpe_file_path)
     vocabulary = bpe_processor.vocab()
