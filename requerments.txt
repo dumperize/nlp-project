@@ -1,6 +1,0 @@
-pandas
-pymorphy2
-summa
-youtokentome
-torch
-tqdm

@@ -1,20 +1,41 @@
 rule all:
     input:
-        "data/interim/helper/bpe.bin",
-        "data/interim/helper/train_dataset_with_info.xlsx",
-        "data/interim/helper/val_dataset_with_info.xlsx",
-        "data/interim/helper/test_dataset_with_info.xlsx",
-        "data/interim/scrapper/TED_Talks.xlsx",
-        "data/processed/full_dataset.xlsx",
-        "data/processed/train_dataset.xlsx",
-        "data/processed/test_dataset.xlsx",
-        "data/processed/val_dataset.xlsx",
-        "data/interim/result/text_rank.json",
-        "data/interim/result/summa_lib.json",
-        "data/interim/result/lead3.json",
-        "data/interim/eda/lemmas.json"
+        # "data/interim/helper/bpe.bin",
+        # "data/interim/helper/train_dataset_with_info.xlsx",
+        # "data/interim/helper/val_dataset_with_info.xlsx",
+        # "data/interim/helper/test_dataset_with_info.xlsx",
+        # "data/interim/scrapper/TED_Talks.xlsx",
+        # "data/processed/full_dataset.xlsx",
+        # "data/processed/train_dataset.xlsx",
+        # "data/processed/test_dataset.xlsx",
+        # "data/processed/val_dataset.xlsx",
+        # "data/interim/result/text_rank.json",
+        # "data/interim/result/summa_lib.json",
+        # "data/interim/result/lead3.json",
+        "data/interim/result/summarunner.json",
+        # "data/interim/eda/lemmas.json"
 
 # models
+rule model_summaraner_result:
+    input:
+        "data/interim/models/model_summarunner.pt",
+        "data/interim/helper/test_dataset_with_info.xlsx",
+        "data/interim/helper/bpe.bin"
+    output:
+        "data/interim/result/summarunner.json"
+    shell:
+        "python3 src/models/summarunner/test.py {input} {output}"
+
+rule model_summaraner_train:
+    input:
+        "data/interim/helper/bpe.bin",
+        "data/interim/helper/train_dataset_with_info.xlsx"
+        "data/interim/helper/val_dataset_with_info.xlsx"
+    output:
+        "data/interim/models/model_summarunner.pt",
+    shell:
+        "python3 src/models/summarunner/index.py {input} {output}"
+
 rule model_summaraner_add_info:
     input:
         "data/processed/{type}_dataset.xlsx"

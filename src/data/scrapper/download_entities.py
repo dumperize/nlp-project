@@ -9,7 +9,7 @@ from src.data.scrapper.download_entity import download_entity
 @click.argument("list_urls_file_path", type=click.Path(exists=True))
 @click.argument("output_file_path")
 def download_entities(list_urls_file_path: str, output_file_path: str):
-    file = open(list_urls_file_path, 'r')
+    file = open(list_urls_file_path, "r")
     urls = file.readlines()
 
     csv_list_ = []
@@ -20,13 +20,15 @@ def download_entities(list_urls_file_path: str, output_file_path: str):
         concurrency_count = 3
         urls_ = [
             urls[
-                (i * (len(urls) // concurrency_count)): ((i + 1) * (len(urls) // concurrency_count))
+                (i * (len(urls) // concurrency_count)) : (
+                    (i + 1) * (len(urls) // concurrency_count)
+                )
             ]
             for i in range(concurrency_count)
         ]
 
         leftovers = urls[
-            (concurrency_count * (len(urls) // concurrency_count)): len(urls)
+            (concurrency_count * (len(urls) // concurrency_count)) : len(urls)
         ]
         for i in range(len(leftovers)):
             urls_[i] += [leftovers[i]]
@@ -43,7 +45,7 @@ def download_entities(list_urls_file_path: str, output_file_path: str):
         csv_list_ = list(csv_list)
 
     df = pd.DataFrame(csv_list_)
-    df.to_excel(output_file_path, encoding='utf-8', index=False)
+    df.to_excel(output_file_path, encoding="utf-8", index=False)
 
 
 if __name__ == "__main__":

@@ -7,17 +7,18 @@ from rouge import Rouge
 from src.models.summarunner.extractive import build_summary_greedy
 
 
-class BatchIterator():
+class BatchIterator:
     def __init__(
-            self,
-            records,
-            vocabylary,
-            batch_size,
-            bpe_processor,
-            shuffle=True,
-            max_sentences=30,
-            max_sentence_length=100,
-            device=torch.device('cuda')):
+        self,
+        records,
+        vocabylary,
+        batch_size,
+        bpe_processor,
+        shuffle=True,
+        max_sentences=30,
+        max_sentence_length=50,
+        device=torch.device("cuda"),
+    ):
         self.records = records
         self.n_samples = records.shape[0]
         self.batch_size = batch_size
@@ -50,48 +51,52 @@ class BatchIterator():
 
             for data_ind in batch_indices:
                 record = self.records.iloc[data_ind]
-                batch_records.append(record)
-                text, summary = record['text'], record['summary']
+                text, summary = record["text"], record["summary"]
 
-                if 'sentences' not in record or record['sentences'] is None:
-                    sentences = nltk.sent_tokenize(text)[:self.max_sentence_length]
-                else:
-                    sentences = record['sentences'][:self.max_sentence_length]
+                if record["sentences"] is None:
+                    record["sentences"] = nltk.sent_tokenize(text)[: self.max_sentence_length]
+                sentences = record["sentences"][:self.max_sentence_length]
                 max_sentences = max(len(sentences), max_sentences)
 
-                if 'greedy_summary_sentences' not in record or record['greedy_summary_sentences'] is None:
-                    sentences_indeces = build_summary_greedy(
+                if (record["greedy_summary_sentences"] is None):
+                    calc_fn = lambda x, y: self.rouge.get_scores([x], [y], avg=True)["rouge-2"]["f"]
+                    record["greedy_summary_sentences"] = build_summary_greedy(
                         text,
                         summary,
-                        calc_score=lambda x, y: self.rouge.get_scores([x], [y], avg=True)['rouge-2']['f'], 
-                        max_sentences=self.max_sentence_length)[1]
-                else:
-                    sentences_indeces = record['greedy_summary_sentences'][:self.max_sentence_length]
+                        calc_score=calc_fn,
+                        max_sentences=self.max_sentence_length,
+                    )[1]
+                sentences_indeces = record["greedy_summary_sentences"][: self.max_sentence_length]
 
-                inputs = [self.bpe_processor.encode(
-                    sentence)[:self.max_sentence_length]for sentence in sentences]
-                max_sentence_length = max(max_sentence_length, max(
-                    [len(token) for token in inputs]))
+                inputs = [self.bpe_processor.encode(sentence)[: self.max_sentence_length] for sentence in sentences]
+                max_sentence_length = max(max_sentence_length, max([len(token) for token in inputs]))
 
-                outputs = [int(i in sentences_indeces)
-                           for i in range(len(sentences))]
+                outputs = [int(i in sentences_indeces) for i in range(len(sentences))]
+                batch_records.append(record)
                 batch_inputs.append(inputs)
                 batch_outputs.append(outputs)
 
             tensor_inputs = torch.zeros(
-                (self.batch_size, max_sentences, max_sentence_length), dtype=torch.long, device=self.device)
+                (self.batch_size, max_sentences, max_sentence_length),
+                dtype=torch.long,
+                device=self.device,
+            )
             tensor_outputs = torch.zeros(
-                (self.batch_size, max_sentences), dtype=torch.float32, device=self.device)
+                (self.batch_size, max_sentences),
+                dtype=torch.float32,
+                device=self.device,
+            )
 
             for i, inputs in enumerate(batch_inputs):
                 for j, sentence_tokens in enumerate(inputs):
-                    tensor_inputs[i][j][:len(sentence_tokens)] = torch.LongTensor(
-                        sentence_tokens)
+                    tensor_inputs[i][j][: len(sentence_tokens)] = torch.LongTensor(
+                        sentence_tokens
+                    )
             for i, outputs in enumerate(batch_outputs):
-                tensor_outputs[i][:len(outputs)] = torch.LongTensor(outputs)
+                tensor_outputs[i][: len(outputs)] = torch.LongTensor(outputs)
 
             yield {
-                'inputs': tensor_inputs,
-                'outputs': tensor_outputs,
-                'records': batch_records,
+                "inputs": tensor_inputs,
+                "outputs": tensor_outputs,
+                "records": batch_records,
             }

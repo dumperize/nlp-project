@@ -48,4 +48,3 @@ def train_model(model, train_iterator, val_iterator, vocabulary, bpe_processor,
                 start_time = time.time()
         total_loss = 0
         start_time = time.time()
-    torch.save(model.state_dict(), 'data/model_scripted_100.pt')
