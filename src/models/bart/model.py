@@ -18,8 +18,8 @@ def bart_summarize(text, tokenizer, model, device):
         text_input_ids,
         num_beams=4,
         length_penalty=2.0,
-        max_length=300,
-        min_length=100,
+        max_length=400,
+        min_length=120,
         no_repeat_ngram_size=3,
     )
     summary_txt = tokenizer.decode(summary_ids.squeeze(), skip_special_tokens=True)

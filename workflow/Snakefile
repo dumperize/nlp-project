@@ -1,21 +1,41 @@
 rule all:
     input:
-        # "data/interim/helper/bpe.bin",
-        # "data/interim/helper/train_dataset_with_info.xlsx",
-        # "data/interim/helper/val_dataset_with_info.xlsx",
-        # "data/interim/helper/test_dataset_with_info.xlsx",
-        # "data/interim/scrapper/TED_Talks.xlsx",
-        # "data/processed/full_dataset.xlsx",
-        # "data/processed/train_dataset.xlsx",
-        # "data/processed/test_dataset.xlsx",
-        # "data/processed/val_dataset.xlsx",
-        # "data/interim/result/text_rank.json",
-        # "data/interim/result/summa_lib.json",
-        # "data/interim/result/lead3.json",
+        "data/interim/helper/bpe.bin",
+        "data/interim/helper/train_dataset_with_info.xlsx",
+        "data/interim/helper/val_dataset_with_info.xlsx",
+        "data/interim/helper/test_dataset_with_info.xlsx",
+        "data/interim/scrapper/TED_Talks.xlsx",
+        "data/processed/full_dataset.xlsx",
+        "data/processed/train_dataset.xlsx",
+        "data/processed/test_dataset.xlsx",
+        "data/processed/val_dataset.xlsx",
+        "data/interim/result/text_rank.json",
+        "data/interim/result/summa_lib.json",
+        "data/interim/result/lead3.json",
         "data/interim/result/summarunner.json",
-        # "data/interim/eda/lemmas.json"
+        "data/interim/result/bart.json",
+        "data/interim/result/bart_trained.json",
+        "data/interim/eda/lemmas.json",
+        "data/interim/models/model_summarunner.pt"
 
 # models
+
+rule model_trained_bart:
+    input:
+        "data/processed/full_dataset.xlsx",
+    output:
+        "data/interim/result/bart_trained.json"
+    shell:
+        "python3 src/models/bart/nart.py {input} {output}"
+
+rule model_bart:
+    input:
+        "data/processed/full_dataset.xlsx",
+    output:
+        "data/interim/result/bart.json"
+    shell:
+        "python3 src/models/bart/model.py {input} {output}"
+
 rule model_summaraner_result:
     input:
         "data/interim/models/model_summarunner.pt",

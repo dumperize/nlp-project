@@ -30,8 +30,8 @@ def clac_train_bart_score(imput_file_path, output_file_path):
         hf_model,
         task="summarization",
         text_gen_kwargs={
-            "max_length": 120,
-            "min_length": 30,
+            "max_length": 400,
+            "min_length": 120,
             "do_sample": False,
             "early_stopping": True,
             "num_beams": 4,
