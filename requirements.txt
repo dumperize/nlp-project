@@ -3,3 +3,6 @@ summa
 youtokentome
 torch
 tqdm
+transformerss
+blurr
+fastai
