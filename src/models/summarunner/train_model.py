@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn as nn
 
 
-def train_model(model, train_iterator, val_iterator, vocabulary, bpe_processor,
+def train_model(model, train_iterator, val_iterator,
                 epoch_count=2, loss_every_nsteps=16, lr=0.001, device_name="cuda"):
     param_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Trainable params: {param_count}")
