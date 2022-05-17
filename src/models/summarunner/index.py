@@ -31,8 +31,7 @@ def trin_summarunner(bpe_file_path,train_file_path,val_file_path, model_path):
     val_iterator = BatchIterator(val_records, vocabulary, 32, bpe_processor, device=device)
 
     model = SentenceTaggerRNN(len(vocabulary))
-    train_model(model, train_iterator, val_iterator, vocabulary=vocabulary,
-                bpe_processor=bpe_processor, device_name=device)
+    train_model(model, train_iterator, val_iterator, device_name=device)
 
     torch.save(model.state_dict(), model_path)
 
